@@ -118,5 +118,59 @@ uint8_t FATFS_GetAttachedDriversNbr(void)
   return disk.nbr;
 }
 
+/**
+ * @brief This function create a complete path adding to the drive path (0:\) the
+ *        file path (\path\to\file)
+ *
+ * @param drvPath: drive path that is built from FATFS_LinkDriver function
+ * @param filePath: file path (\path\to\file)
+ * @param outPath: out complete path (example 1:\path\to\file)
+ * @param len: len of the output buffer
+ * @return Returns 0 in case of success, otherwise 1.
+ */
+uint8_t FATFS_CreateCompletePath(const char *drvPath, const char *filePath, const int32_t len, char *outPath) {
+
+  int32_t iTot = 0, iCount = 0;
+  int32_t drvPathLen = 0, filePathLen = 0;
+
+  while(drvPath[drvPathLen]){
+    /* Zero not found so move on to the next character. */
+    drvPathLen++;
+  }
+
+  while(filePath[filePathLen]){
+    /* Zero not found so move on to the next character. */
+    filePathLen++;
+  }
+
+  /* Is there enough space to the output buffer? */
+  if((drvPathLen + filePathLen) >= len) {
+    return 1;
+  }
+
+  /* padding output buffer to zero */
+  for(int32_t i = len - 1; i >= 0; --i) {
+    outPath[i] = 0;
+  }
+
+  /* Copy drive path to the output buffer */
+  while(drvPath[iTot]) {
+    outPath[iTot] = drvPath[iTot];
+    ++iTot;
+  }
+
+  /* Copy file path to the output buffer */
+  while(filePath[iCount]) {
+    outPath[iTot] = filePath[iCount];
+    ++iCount;
+    ++iTot;
+  }
+
+  /* Pad the destination */
+  outPath[iTot] = (char)0;
+
+  return 0;
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
